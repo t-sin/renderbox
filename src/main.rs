@@ -1,3 +1,5 @@
+use clap::Parser;
+
 mod renderbox;
 mod window;
 
@@ -7,12 +9,17 @@ use window::Application;
 const WINDOW_WIDTH: u32 = 960;
 const WINDOW_HEIGHT: u32 = 840;
 
-// a png file for GIMP splash screen
-const IMAGE_PATH: &str = "/usr/share/gimp/3.0/images/gimp-splash.png";
+#[derive(Parser)]
+#[command(version)]
+#[command(about = "Renderbox is a shadertoy like playground application.")]
+struct Args {
+    image_path: String,
+}
 
 fn main() {
+    let args = Args::parse();
     let option = RenderboxOption {
-        image_path: IMAGE_PATH.into(),
+        image_path: args.image_path,
     };
 
     Application::<RenderboxState, RenderboxOption>::start_app(option);

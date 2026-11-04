@@ -11,6 +11,9 @@ winit = "0.30.13"
 # glium is a high-level OpenGL wrapper
 glium = "0.36.0"
 glutin-winit = "0.5.0"
+# glow = "0.18.0" # low-level wrapper
+
+clap = { version = "4.6.7", features = ["derive"] }
+
 rand = "0.10.3"
 image = "0.25.10"
-# glow = "0.18.0" # low-level wrapper
