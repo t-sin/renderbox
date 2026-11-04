@@ -6,20 +6,20 @@ use glium::{Surface, Texture2d};
 
 use crate::window::{ApplicationContext, GliumDisplay};
 
+pub struct RenderboxOption {
+    pub image_path: String,
+}
+
 pub struct RenderboxState {
     pub opengl_texture: Texture2d,
     pub dest_texture: Texture2d,
 }
 
-// a png file for GIMP splash screen
-const IMAGE_PATH: &str = "/usr/share/gimp/3.0/images/gimp-splash.png";
-
-impl ApplicationContext for RenderboxState {
-    fn new<'a>(display: &GliumDisplay) -> Self {
-        //       let mut data = Vec::new();
-        let file = File::open(IMAGE_PATH).expect(&format!("cannot open file: {}", IMAGE_PATH));
+impl ApplicationContext<RenderboxOption> for RenderboxState {
+    fn new<'a>(option: &RenderboxOption, display: &GliumDisplay) -> Self {
+        let file = File::open(&option.image_path)
+            .expect(&format!("cannot open file: {}", option.image_path));
         let reader = BufReader::new(file);
-        //      let _ = file.read(&mut data);
 
         let image = image::load(reader, image::ImageFormat::Png)
             .unwrap()

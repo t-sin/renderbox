@@ -1,4 +1,4 @@
-use std::num::NonZeroU32;
+use std::{marker::PhantomData, num::NonZeroU32};
 
 use glium::glutin::{
     context::NotCurrentGlContext,
@@ -18,29 +18,37 @@ use crate::{WINDOW_HEIGHT, WINDOW_WIDTH};
 
 pub type GliumDisplay = Display<WindowSurface>;
 
-pub trait ApplicationContext {
-    fn new(display: &GliumDisplay) -> Self;
+pub trait ApplicationContext<T> {
+    fn new(option: &T, display: &GliumDisplay) -> Self;
     fn update(&mut self);
     fn draw_frame(&mut self, display: &GliumDisplay);
     fn handle_window_event(&mut self, ev: &WindowEvent, window: &Window);
 }
 
-pub struct GliumState<T: ApplicationContext> {
+pub struct GliumState<T, U>
+where
+    T: ApplicationContext<U>,
+{
     pub window: Window,
     pub display: GliumDisplay,
     pub context: T,
+    option: PhantomData<U>,
 }
 
 #[derive(Default)]
-pub struct Application<T: ApplicationContext> {
-    pub glium_state: Option<GliumState<T>>,
+pub struct Application<T, U>
+where
+    T: ApplicationContext<U>,
+{
+    pub glium_state: Option<GliumState<T, U>>,
+    pub option: U,
 }
 
-impl<T> GliumState<T>
+impl<T, U> GliumState<T, U>
 where
-    T: ApplicationContext,
+    T: ApplicationContext<U>,
 {
-    fn new<'a>(event_loop: &ActiveEventLoop) -> Self {
+    fn new<'a>(option: &U, event_loop: &ActiveEventLoop) -> Self {
         let wa = WindowAttributes::default()
             .with_resizable(true)
             .with_blur(true)
@@ -103,21 +111,22 @@ where
             .unwrap();
         let display = glium::Display::from_context_surface(current_context, surface).unwrap();
 
-        let context = T::new(&display);
+        let context = T::new(option, &display);
         GliumState {
             window: window,
             display: display,
             context: context,
+            option: PhantomData,
         }
     }
 }
 
-impl<T> ApplicationHandler for Application<T>
+impl<T, U> ApplicationHandler for Application<T, U>
 where
-    T: ApplicationContext,
+    T: ApplicationContext<U>,
 {
     fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
-        self.glium_state = Some(GliumState::<T>::new(event_loop));
+        self.glium_state = Some(GliumState::<T, U>::new(&self.option, event_loop));
     }
 
     fn window_event(
@@ -169,19 +178,22 @@ where
     }
 }
 
-impl<T> Application<T>
+impl<T, U> Application<T, U>
 where
-    T: ApplicationContext,
+    T: ApplicationContext<U>,
 {
-    fn new() -> Self {
-        Self { glium_state: None }
+    fn new(option: U) -> Self {
+        Self {
+            glium_state: None,
+            option: option,
+        }
     }
 
-    pub fn start_app() {
+    pub fn start_app(option: U) {
         let event_loop = EventLoop::new().unwrap();
         event_loop.set_control_flow(ControlFlow::Wait);
 
-        let mut renderbox_app = Application::<T>::new();
+        let mut renderbox_app = Application::<T, U>::new(option);
         let _ = event_loop.run_app(&mut renderbox_app);
     }
 }
