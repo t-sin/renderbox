@@ -1,0 +1,16 @@
+[package]
+name = "renderbox"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+winit = "0.30.13"
+
+# OpenGL wrapper
+# first I try to build on glium, and after try with glow
+# glium is a high-level OpenGL wrapper
+glium = "0.36.0"
+glutin-winit = "0.5.0"
+rand = "0.10.3"
+image = "0.25.10"
+# glow = "0.18.0" # low-level wrapper
