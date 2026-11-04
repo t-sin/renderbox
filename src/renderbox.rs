@@ -1,4 +1,5 @@
-use std::io::Cursor;
+use std::fs::File;
+use std::io::BufReader;
 
 use glium::winit::{event::WindowEvent, window::Window};
 use glium::{Surface, Texture2d};
@@ -10,15 +11,19 @@ pub struct RenderboxState {
     pub dest_texture: Texture2d,
 }
 
+// a png file for GIMP splash screen
+const IMAGE_PATH: &str = "/usr/share/gimp/3.0/images/gimp-splash.png";
+
 impl ApplicationContext for RenderboxState {
     fn new<'a>(display: &GliumDisplay) -> Self {
-        let image = image::load(
-            // a png file for GIMP splash screen
-            Cursor::new(&include_bytes!("/usr/share/gimp/3.0/images/gimp-splash.png")[..]),
-            image::ImageFormat::Png,
-        )
-        .unwrap()
-        .to_rgba8();
+        //       let mut data = Vec::new();
+        let file = File::open(IMAGE_PATH).expect(&format!("cannot open file: {}", IMAGE_PATH));
+        let reader = BufReader::new(file);
+        //      let _ = file.read(&mut data);
+
+        let image = image::load(reader, image::ImageFormat::Png)
+            .unwrap()
+            .to_rgba8();
         let image_dimensions = image.dimensions();
         let image =
             glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimensions);
