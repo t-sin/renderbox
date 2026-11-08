@@ -145,7 +145,6 @@ where
                     state.display.resize(new_size.into());
                 }
             }
-
             glium::winit::event::WindowEvent::RedrawRequested => {
                 if let Some(state) = &mut self.glium_state {
                     state.context.update();

@@ -1,6 +1,7 @@
 use clap::Parser;
 
 mod renderbox;
+mod shader;
 mod window;
 
 use renderbox::{RenderboxOption, RenderboxState};
