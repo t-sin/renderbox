@@ -65,7 +65,7 @@ void main() {
 }
 "#;
 
-pub const FRAGMENT_SHADER_CODE: &str = r#"#version 460
+pub const EXAMPLE_FRAGMENT_SHADER: &str = r#"#version 460
 precision highp float;
 
 //in vec4 gl_FragCoord     // a position of this fragment (origin: bottom-left, unit: pixels)
