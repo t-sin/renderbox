@@ -1,6 +1,29 @@
+use std::fs::File;
+use std::io::Read;
+
 use glium::{Program, program::ProgramCreationError};
 
 use crate::window::GliumDisplay;
+
+pub fn read_text_file(path: &str) -> Result<String, ()> {
+    let mut file = File::open(&path).map_err(|err| {
+        println!("cannot open file: {:?}", err);
+        ()
+    })?;
+
+    let mut text = Vec::new();
+    let _ = file.read_to_end(&mut text).map_err(|err| {
+        println!("cannot read file: {:?}", err);
+        ()
+    })?;
+
+    let res = String::from_utf8(text);
+    if let Err(err) = res {
+        panic!("cannot read file: {}\n{}", path, err);
+    }
+
+    Ok(res.unwrap())
+}
 
 pub fn compile_shaders(
     display: &GliumDisplay,

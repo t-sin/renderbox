@@ -1,4 +1,3 @@
-use std::default;
 use std::time::Instant;
 
 use glium::index::NoIndices;
@@ -9,6 +8,10 @@ use crate::{
     shader,
     window::{ApplicationContext, GliumDisplay},
 };
+
+pub struct RenderboxOption {
+    pub fshader_path: String,
+}
 
 #[derive(Clone, Copy)]
 struct CardVertex {
@@ -44,10 +47,6 @@ const CARD_VERTECES: [CardVertex; 6] = [
 ];
 glium::implement_vertex!(CardVertex, position location(0), tex_coord location(1));
 
-pub struct RenderboxOption {
-    pub image_path: String,
-}
-
 #[derive(Default)]
 struct Mouse {
     x: f32,
@@ -65,12 +64,9 @@ pub struct RenderboxState {
 
 impl ApplicationContext<RenderboxOption> for RenderboxState {
     fn new<'a>(option: &RenderboxOption, display: &GliumDisplay) -> Self {
-        let program = shader::compile_shaders(
-            display,
-            shader::VERTEX_SHADER_CODE,
-            shader::FRAGMENT_SHADER_CODE,
-        )
-        .expect("cannot compile shaders");
+        let fshader_src = shader::read_text_file(&option.fshader_path).expect("cannot read file");
+        let program = shader::compile_shaders(display, shader::VERTEX_SHADER_CODE, &fshader_src)
+            .expect("cannot compile shaders");
 
         let resolution = display.get_framebuffer_dimensions();
         let screen_texture = glium::Texture2d::empty_with_format(

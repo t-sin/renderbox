@@ -15,13 +15,14 @@ const WINDOW_TITLE: &str = "Renderbox";
 #[command(version)]
 #[command(about = "Renderbox is a shadertoy like playground application.")]
 struct Args {
-    image_path: String,
+    #[arg(help = "A path to the file includes fragment shader code.")]
+    fshader_path: String,
 }
 
 fn main() {
     let args = Args::parse();
     let option = RenderboxOption {
-        image_path: args.image_path,
+        fshader_path: args.fshader_path,
     };
 
     Application::<RenderboxState, RenderboxOption>::start_app(option);
