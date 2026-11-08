@@ -20,18 +20,18 @@ pub type GliumDisplay = Display<WindowSurface>;
 
 pub trait ApplicationContext<T> {
     fn new(option: &T, display: &GliumDisplay) -> Self;
-    fn update(&mut self);
-    fn draw_frame(&mut self, display: &GliumDisplay);
-    fn handle_window_event(&mut self, ev: &WindowEvent, window: &Window);
+    fn update(&mut self, option: &T);
+    fn draw_frame(&mut self, option: &T, display: &GliumDisplay);
+    fn handle_window_event(&mut self, option: &T, ev: &WindowEvent, window: &Window);
 }
 
 pub struct GliumState<T, U>
 where
     T: ApplicationContext<U>,
 {
-    pub window: Window,
-    pub display: GliumDisplay,
-    pub context: T,
+    window: Window,
+    display: GliumDisplay,
+    context: T,
     option: PhantomData<U>,
 }
 
@@ -111,7 +111,7 @@ where
             .unwrap();
         let display = glium::Display::from_context_surface(current_context, surface).unwrap();
 
-        let context = T::new(option, &display);
+        let context = T::new(&option, &display);
         GliumState {
             window: window,
             display: display,
@@ -145,10 +145,11 @@ where
                     state.display.resize(new_size.into());
                 }
             }
+
             glium::winit::event::WindowEvent::RedrawRequested => {
                 if let Some(state) = &mut self.glium_state {
-                    state.context.update();
-                    state.context.draw_frame(&state.display);
+                    state.context.update(&self.option);
+                    state.context.draw_frame(&self.option, &state.display);
                 }
             }
             glium::winit::event::WindowEvent::KeyboardInput {
@@ -164,7 +165,9 @@ where
             // Every other event
             ev => {
                 if let Some(state) = self.glium_state.as_mut() {
-                    state.context.handle_window_event(&ev, &state.window);
+                    state
+                        .context
+                        .handle_window_event(&self.option, &ev, &state.window);
                 }
             }
         }
