@@ -8,6 +8,7 @@ use window::Application;
 
 const WINDOW_WIDTH: u32 = 960;
 const WINDOW_HEIGHT: u32 = 840;
+const WINDOW_TITLE: &str = "Renderbox";
 
 #[derive(Parser)]
 #[command(version)]

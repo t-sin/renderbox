@@ -52,7 +52,7 @@ where
         let wa = WindowAttributes::default()
             .with_resizable(true)
             .with_blur(true)
-            .with_title("Renderbox");
+            .with_title(crate::WINDOW_TITLE);
 
         // cf. https://github.com/glium/glium/blob/1776d155fe45c0951d9564b3f822283daaf053a1/examples/support/mod.rs#L177
         let config_template_builder = glutin::config::ConfigTemplateBuilder::new();
