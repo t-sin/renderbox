@@ -34,6 +34,9 @@ enum CliCommands {
 struct StartArgs {
     /// A path to the file includes fragment shader code.
     fshader_path: String,
+    /// GLSL version
+    #[arg(default_value = "460")]
+    glsl_version: String,
     /// Watch updates of FSHADER_PATH.
     #[arg(short = 'w')]
     watch_path: bool,
@@ -47,6 +50,7 @@ fn main() {
         }
         CliCommands::Start(args) => {
             let fshader_path = args.fshader_path;
+            let glsl_version = args.glsl_version;
 
             let mut _file_event_watcher = None;
             let mut file_event_receiver = None;
@@ -70,6 +74,7 @@ fn main() {
 
             let option = RenderboxOption {
                 fshader_path,
+                glsl_version,
                 file_event_receiver,
             };
             Application::<RenderboxState, RenderboxOption>::start_app(option);

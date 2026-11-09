@@ -51,10 +51,15 @@ pub fn compile_shaders(
     return Ok(res.unwrap());
 }
 
-pub const OPENGL_SHADER_HEADER_STRING: &str = r#"#version 460"#;
+pub fn generate_shader(code: &str, version: &str) -> String {
+    format!("#version {}\n\n{}", version, code)
+}
 
-pub const VERTEX_SHADER_CODE: &str = r#"#version 460
+pub fn generate_default_vertex_shader(version: &str) -> String {
+    generate_shader(VERTEX_SHADER_CODE, version)
+}
 
+pub const VERTEX_SHADER_CODE: &str = r#"
 layout(location = 0) in vec2 position;
 layout(location = 1) in vec2 tex_coord;
 out vec2 frag_coord;
@@ -65,7 +70,7 @@ void main() {
 }
 "#;
 
-pub const EXAMPLE_FRAGMENT_SHADER: &str = r#"#version 460
+pub const EXAMPLE_FRAGMENT_SHADER: &str = r#"
 precision highp float;
 
 //in vec4 gl_FragCoord     // a position of this fragment (origin: bottom-left, unit: pixels)

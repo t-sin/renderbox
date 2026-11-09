@@ -15,6 +15,7 @@ use crate::{
 
 pub struct RenderboxOption {
     pub fshader_path: String,
+    pub glsl_version: String,
     pub file_event_receiver: Option<Receiver<Result<notify::Event, notify::Error>>>,
 }
 
@@ -71,8 +72,12 @@ pub struct RenderboxState {
 impl ApplicationContext<RenderboxOption> for RenderboxState {
     fn new(option: &RenderboxOption, display: &GliumDisplay) -> Self {
         let fshader_src = shader::read_text_file(&option.fshader_path).expect("cannot read file");
-        let program = shader::compile_shaders(display, shader::VERTEX_SHADER_CODE, &fshader_src)
-            .expect("cannot compile shader");
+        let program = shader::compile_shaders(
+            display,
+            &shader::generate_default_vertex_shader(&option.glsl_version),
+            &fshader_src,
+        )
+        .expect("cannot compile shader");
 
         let resolution = display.get_framebuffer_dimensions();
         let screen_texture = glium::Texture2d::empty_with_format(
