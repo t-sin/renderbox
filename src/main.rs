@@ -35,7 +35,7 @@ struct StartArgs {
     /// A path to the file includes fragment shader code.
     fshader_path: String,
     /// GLSL version
-    #[arg(default_value = "460")]
+    #[arg(default_value = "330")]
     glsl_version: String,
     /// Watch updates of FSHADER_PATH.
     #[arg(short = 'w')]
