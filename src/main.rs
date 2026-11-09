@@ -46,7 +46,10 @@ fn main() {
     let cli = Cli::parse();
     match cli.command {
         CliCommands::Example => {
-            let example_fshader = crate::shader::generate_shader(crate::shader::EXAMPLE_FRAGMENT_SHADER, &cli.glsl_version);
+            let example_fshader = crate::shader::generate_shader(
+                crate::shader::EXAMPLE_FRAGMENT_SHADER,
+                &cli.glsl_version,
+            );
             println!("{}", example_fshader);
         }
         CliCommands::Start(args) => {

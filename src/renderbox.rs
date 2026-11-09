@@ -7,7 +7,7 @@ use glium::{Program, Surface, Texture2d, VertexBuffer};
 use notify::EventKind;
 use notify::event::ModifyKind;
 
-use crate::shader::{VERTEX_SHADER_CODE, compile_shaders};
+use crate::shader::compile_shaders;
 use crate::{
     shader,
     window::{ApplicationContext, GliumDisplay},
@@ -71,13 +71,10 @@ pub struct RenderboxState {
 
 impl ApplicationContext<RenderboxOption> for RenderboxState {
     fn new(option: &RenderboxOption, display: &GliumDisplay) -> Self {
+        let vshader_src = shader::generate_default_vertex_shader(&option.glsl_version);
         let fshader_src = shader::read_text_file(&option.fshader_path).expect("cannot read file");
-        let program = shader::compile_shaders(
-            display,
-            &shader::generate_default_vertex_shader(&option.glsl_version),
-            &fshader_src,
-        )
-        .expect("cannot compile shader");
+        let program = shader::compile_shaders(display, &vshader_src, &fshader_src)
+            .expect("cannot compile shader");
 
         let resolution = display.get_framebuffer_dimensions();
         let screen_texture = glium::Texture2d::empty_with_format(
@@ -137,9 +134,10 @@ impl ApplicationContext<RenderboxOption> for RenderboxState {
             }
         }
     }
-    fn draw_frame(&mut self, _option: &RenderboxOption, display: &GliumDisplay) {
+    fn draw_frame(&mut self, option: &RenderboxOption, display: &GliumDisplay) {
         if let Some(fshader) = self.new_fshader.as_ref() {
-            match compile_shaders(display, VERTEX_SHADER_CODE, fshader) {
+            let vshader = &shader::generate_default_vertex_shader(&option.glsl_version);
+            match compile_shaders(display, vshader, fshader) {
                 Ok(program) => {
                     self.program = program;
                 }
