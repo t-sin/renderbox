@@ -52,7 +52,7 @@ pub fn compile_shaders(
 }
 
 pub fn generate_shader(code: &str, version: &str) -> String {
-    format!("#version {}\n\n{}", version, code)
+    format!("#version {}\n{}", version, code)
 }
 
 pub fn generate_default_vertex_shader(version: &str) -> String {
@@ -67,11 +67,9 @@ out vec2 frag_coord;
 void main() {
 //  frag_coord = tex_coord;
   gl_Position = vec4(position, 0.0, 1.0);
-}
-"#;
+}"#;
 
-pub const EXAMPLE_FRAGMENT_SHADER: &str = r#"
-precision highp float;
+pub const EXAMPLE_FRAGMENT_SHADER: &str = r#"precision highp float;
 
 //in vec4 gl_FragCoord     // a position of this fragment (origin: bottom-left, unit: pixels)
 out vec4 frag_color;       // a color output of this fragment
@@ -90,5 +88,4 @@ void main(void) {
   float v = abs(d - 100) < 5 ? 1.0 : 0.0;
 
   frag_color = vec4(v, v, v, 1.0);
-}
-"#;
+}"#;

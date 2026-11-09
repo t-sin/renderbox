@@ -20,6 +20,9 @@ const WINDOW_TITLE: &str = "Renderbox";
 struct Cli {
     #[command(subcommand)]
     command: CliCommands,
+    /// GLSL version
+    #[arg(default_value = "330")]
+    glsl_version: String,
 }
 
 #[derive(Subcommand)]
@@ -34,9 +37,6 @@ enum CliCommands {
 struct StartArgs {
     /// A path to the file includes fragment shader code.
     fshader_path: String,
-    /// GLSL version
-    #[arg(default_value = "330")]
-    glsl_version: String,
     /// Watch updates of FSHADER_PATH.
     #[arg(short = 'w')]
     watch_path: bool,
@@ -46,11 +46,12 @@ fn main() {
     let cli = Cli::parse();
     match cli.command {
         CliCommands::Example => {
-            println!("{}", crate::shader::EXAMPLE_FRAGMENT_SHADER);
+            let example_fshader = crate::shader::generate_shader(crate::shader::EXAMPLE_FRAGMENT_SHADER, &cli.glsl_version);
+            println!("{}", example_fshader);
         }
         CliCommands::Start(args) => {
             let fshader_path = args.fshader_path;
-            let glsl_version = args.glsl_version;
+            let glsl_version = cli.glsl_version;
 
             let mut _file_event_watcher = None;
             let mut file_event_receiver = None;
